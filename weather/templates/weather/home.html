@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'weather/css/style.css' %}">
+    <title>Weather App</title>
+</head>
+<body>
+    <header>
+        <h1>Weather App</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/register">Register</a>
+        </nav>
+    </header>
+    <main>
+        <div class="wrapper">
+            <form action="/get-weather" method="POST">
+                <div>
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" name="location" placeholder="Enter location" required>
+                </div>
+                <button type="submit">Get Weather</button>
+            </form>
+            <div id="weather-info">
+                <!-- Weather information will be displayed here -->
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2023 Weather App. All rights reserved.</p>
+    </footer>
+</body>
+</html>

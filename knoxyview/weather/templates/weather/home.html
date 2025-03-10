@@ -1,0 +1,519 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnoxyView Weather App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 40px;
+            backdrop-filter: blur(10px);
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Colorblind Mode Styles */
+        body.colorblind-mode {
+            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+            color: #333;
+        }
+
+        body.colorblind-mode .container {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.colorblind-mode .header-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.colorblind-mode .app-title {
+            background: linear-gradient(to right, #0077b6, #00b4d8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        body.colorblind-mode .logout-button {
+            background: linear-gradient(to right, #d90429, #ef233c);
+        }
+
+        body.colorblind-mode .current-weather,
+        body.colorblind-mode .forecast-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.colorblind-mode .weather-item,
+        body.colorblind-mode .forecast-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        body.colorblind-mode .search-input {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        body.colorblind-mode .search-input:focus {
+            border-color: #0077b6;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.2);
+        }
+
+        body.colorblind-mode .search-button {
+            background: linear-gradient(to right, #0077b6, #00b4d8);
+        }
+
+        body.colorblind-mode .location-button {
+            background: linear-gradient(to right, #2a9d8f, #264653);
+        }
+
+        body.colorblind-mode .control-button.voice-button {
+            background: linear-gradient(to right, #8b5cf6, #6d28d9);
+        }
+
+        body.colorblind-mode .control-button.colorblind-button {
+            background: linear-gradient(to right, #ec4899, #db2777);
+        }
+
+        body.colorblind-mode .control-button.font-button {
+            background: linear-gradient(to right, #f59e0b, #d97706);
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            background: rgba(15, 23, 42, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logout-button {
+            padding: 10px 24px;
+            background: linear-gradient(to right, #f43f5e, #ef4444);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .logout-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 24px;
+            padding: 32px;
+        }
+
+        .current-weather {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .location-info {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .location-info h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            color: #f8fafc;
+        }
+
+        .date-info {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .temperature-display {
+            text-align: center;
+            font-size: 4.5rem;
+            font-weight: 700;
+            margin: 32px 0;
+            color: #f8fafc;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .weather-item {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .weather-item:hover {
+            transform: translateY(-3px);
+            background: rgba(51, 65, 85, 0.6);
+        }
+
+        .forecast-section {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 20px;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .forecast-title {
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            color: #f8fafc;
+        }
+
+        .forecast-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .forecast-card {
+            background: rgba(51, 65, 85, 0.4);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .forecast-card:hover {
+            transform: translateY(-3px);
+            background: rgba(51, 65, 85, 0.6);
+        }
+
+        .forecast-card img {
+            width: 64px;
+            height: 64px;
+            margin: 12px 0;
+        }
+
+        .search-section {
+            padding: 24px 32px;
+            background: rgba(15, 23, 42, 0.6);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(30, 41, 59, 0.5);
+            color: white;
+            font-size: 1rem;
+            width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+        }
+
+        .search-button {
+            padding: 12px 24px;
+            background: linear-gradient(to right, #3b82f6, #2563eb);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .location-button {
+            padding: 12px 24px;
+            background: linear-gradient(to right, #10b981, #059669);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .accessibility-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .control-button {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voice-button { background: linear-gradient(to right, #8b5cf6, #6d28d9); }
+        .colorblind-button { background: linear-gradient(to right, #ec4899, #db2777); }
+        .font-button { background: linear-gradient(to right, #f59e0b, #d97706); }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <div class="app-title">KnoxyView </div>
+        </div>
+
+        <div class="main-content">
+            <div class="current-weather">
+                <div class="location-info">
+                    <h1>{{ city|title }}</h1>
+                    <div class="date-info">{{ day }}, {{ date }}</div>
+                </div>
+
+                {% if current_weather %}
+                    <div class="temperature-display">{{ current_weather.temperature }}&deg;C</div>
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <i class="fas fa-temperature-high"></i>
+                            <p>Feels Like</p>
+                            <h3>{{ current_weather.real_feel }}&deg;C</h3>
+                        </div>
+                        <div class="weather-item">
+                            <i class="fas fa-tint"></i>
+                            <p>Humidity</p>
+                            <h3>{{ current_weather.humidity }}%</h3>
+                        </div>
+                        <div class="weather-item">
+                            <i class="fas fa-wind"></i>
+                            <p>Wind Direction</p>
+                            <h3>{{ current_weather.wind_direction }}</h3>
+                        </div>
+                        <div class="weather-item">
+                            <i class="fas fa-compress-alt"></i>
+                            <p>Pressure</p>
+                            <h3>{{ current_weather.pressure }} hPa</h3>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="error-message">Location not available. Please try another city.</p>
+                {% endif %}
+            </div>
+
+            <div class="forecast-section">
+                <h2 class="forecast-title">5-Day Forecast</h2>
+                <div class="forecast-cards">
+                    {% for day in forecast %}
+                        <div class="forecast-card">
+                            <p>{{ day.date }}</p>
+                            <img src="http://openweathermap.org/img/wn/{{ day.icon }}.png" alt="Weather Icon">
+                            <h3>{{ day.temp }}&deg;C</h3>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <form method="get" action="{% url 'fetch_weather' %}" class="search-form">
+                <input type="text" name="city" placeholder="Enter a city" required class="search-input">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                <button type="button" class="location-button" id="getLocation">
+                    <i class="fas fa-location-dot"></i> Use My Location
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="accessibility-controls">
+        <button id="speakWeather" class="control-button voice-button">
+            <i class="fas fa-volume-up"></i> Read Weather
+        </button>
+        <button id="toggleColorblindMode" class="control-button colorblind-button">
+            <i class="fas fa-eye"></i> Colorblind Mode
+        </button>
+        <button id="increaseFont" class="control-button font-button">A+</button>
+        <button id="decreaseFont" class="control-button font-button">A-</button>
+    </div>
+    <footer style="
+    text-align: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 40px;
+    backdrop-filter: blur(10px);
+    color: #94a3b8;
+    font-size: 0.9rem;
+">
+  <!-- Back to Top Button -->
+  <button onclick="scrollToTop()" style="
+  padding: 10px 20px;
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+">
+  <i class="fas fa-arrow-up"></i> Back to Top
+</button>
+
+<!-- Links -->
+<div style="margin-bottom: 20px;">
+  <a href="#" style="color: #60a5fa; text-decoration: none; margin: 0 10px;">Documentation</a>
+  <a href="#" style="color: #60a5fa; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+  <a href="#" style="color: #60a5fa; text-decoration: none; margin: 0 10px;">Terms of Service</a>
+  <a href="mailto:2303051240130@paruluniversity.ac.in" style="color: #60a5fa; text-decoration: none; margin: 0 10px;">Contact Us</a>
+</div>
+
+<!-- Social Media Icons -->
+<div style="margin-bottom: 20px;">
+  <a href="https://x.com/Nandakishor02?t=m6bvkeIsn2sPfw43pFj2AQ&s=09" target="_blank" style="color: #60a5fa; text-decoration: none; margin: 0 10px;">
+      <i class="fab fa-twitter"></i>
+  </a>
+  <a href="#" target="_blank" style="color: #60a5fa; text-decoration: none; margin: 0 10px;">
+      <i class="fab fa-facebook"></i>
+  </a>
+  <a href="#" target="_blank" style="color: #60a5fa; text-decoration: none; margin: 0 10px;">
+      <i class="fab fa-instagram"></i>
+  </a>
+  <a href="https://github.com/NandakishorNaiR" target="_blank" style="color: #60a5fa; text-decoration: none; margin: 0 10px;">
+      <i class="fab fa-github"></i>
+  </a>
+</div>
+
+    <p>KnoxyView © 2025 Knoxy Nexus. All rights reserved.</p>
+</footer>
+    <script>
+        // Toggle Colorblind Mode
+        document.getElementById('toggleColorblindMode').addEventListener('click', () => {
+            document.body.classList.toggle('colorblind-mode');
+        });
+
+        // Geolocation Script
+        document.getElementById('getLocation').addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const { latitude, longitude } = position.coords;
+                        window.location.href = `/weather/?lat=${latitude}&lon=${longitude}`;
+                    },
+                    error => alert(`Error: ${error.message}`)
+                );
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        });
+
+        // Voice Assistant Script
+        document.getElementById('speakWeather').addEventListener('click', () => {
+            let weatherText = `The current temperature is {{ current_weather.temperature }} degrees Celsius. 
+                            It feels like {{ current_weather.real_feel }} degrees. 
+                            Humidity is {{ current_weather.humidity }} percent. 
+                            Wind direction is {{ current_weather.wind_direction }}. 
+                            Pressure is {{ current_weather.pressure }} hPa.`;
+
+            let speech = new SpeechSynthesisUtterance(weatherText);
+            speech.lang = "en-US"; 
+            speech.rate = 1;
+            window.speechSynthesis.speak(speech);
+        });
+
+        // Font Size Adjustment Script
+        document.getElementById('increaseFont').addEventListener('click', () => {
+            document.body.style.fontSize = (parseFloat(getComputedStyle(document.body).fontSize) + 2) + 'px';
+        });
+        
+        document.getElementById('decreaseFont').addEventListener('click', () => {
+            document.body.style.fontSize = (parseFloat(getComputedStyle(document.body).fontSize) - 2) + 'px';
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

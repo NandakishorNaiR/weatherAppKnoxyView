@@ -352,12 +352,12 @@
                 </div>
 
                 {% if current_weather %}
-                    <div class="temperature-display">{{ current_weather.real_feel }}&deg;C</div>
+                    <div class="temperature-display">{{ current_weather.temperature }}&deg;C</div>
                     <div class="weather-grid">
                         <div class="weather-item">
                             <i class="fas fa-temperature-high"></i>
                             <p>Feels Like</p>
-                            <h3>{{ current_weather.temperature }}&deg;C</h3>
+                            <h3>{{ current_weather.real_feel }}&deg;C</h3>
                         </div>
                         <div class="weather-item">
                             <i class="fas fa-tint"></i>
